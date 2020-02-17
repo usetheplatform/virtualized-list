@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        height: 100%;
+        overflow-y: auto;
+      }
+
+      .inner-container {
+        position: relative;
+      }
+
+      .element {
+          border: 1px dashed #ccc;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="inner-container"></div>
+    </div>
+
+
+  <script>
+    let count = 1000;
+    let itemHeight = 150;
+    let container = document.querySelector(".container");
+    let innerContainer = document.querySelector(".inner-container");
+    let items = new Array(count).fill(null);
+    let windowHeight = window.innerHeight;
+    let innerHeight = count * itemHeight; // Total height of the list
+
+    innerContainer.style = `height:${innerHeight}px`;
+
+    container.addEventListener("scroll", (event) => {
+      scrollTop = event.currentTarget.scrollTop;
+      render(scrollTop, windowHeight, itemHeight);
+    }, { pass: true });
+
+    function renderItem(index) {
+      let item = document.createElement("div");
+      item.style = `height: ${itemHeight}px; position:absolute; width: 100%; top: ${index * itemHeight}px;`;
+      item.classList.add("element");
+      item.innerHTML = `Item ${index}`;
+
+      return item;
+    }
+
+    function render(scrollTop, windowHeight, itemHeight) {
+    innerContainer.innerHTML = "";
+    let startIndex = Math.floor(scrollTop / itemHeight);
+    let endIndex = Math.min(count - 1, Math.floor((scrollTop + windowHeight + windowHeight) / itemHeight));
+
+    console.log({ scrollTop, startIndex, endIndex });
+    for (let i = startIndex; i <= endIndex; i++) {
+        let child = renderItem(i);
+        innerContainer.appendChild(child)
+    }
+    }
+
+    render(0, windowHeight, itemHeight);
+
+  </script>
+  </body>
+</html>
