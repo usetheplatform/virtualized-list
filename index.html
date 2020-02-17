@@ -31,7 +31,27 @@
 
 
   <script>
-    let count = 1000;
+    function throttle(func, delay) {
+      let previousCall;
+      let previousFunc;
+      return function(...args) {
+        let context = this;
+        if (!previousCall) {
+          func.apply(context, args);
+          previousCall = Date.now();
+        } else {
+          clearTimeout(previousFunc);
+          previousFunc = setTimeout(() => {
+            if (Date.now() - previousCall >= delay) {
+              func.apply(context, args);
+              previousCall = Date.now();
+            }
+          }, delay);
+        }
+      }
+    }
+
+    let count = 10000;
     let itemHeight = 150;
     let container = document.querySelector(".container");
     let innerContainer = document.querySelector(".inner-container");
@@ -41,10 +61,13 @@
 
     innerContainer.style = `height:${innerHeight}px`;
 
-    container.addEventListener("scroll", (event) => {
-      scrollTop = event.currentTarget.scrollTop;
+    function handleScroll(event) {
+      console.log({ event });
+      scrollTop = event.target.scrollTop;
       render(scrollTop, windowHeight, itemHeight);
-    }, { pass: true });
+    }
+
+    container.addEventListener('scroll', throttle(handleScroll, 100), { passive: true });
 
     function renderItem(index) {
       let item = document.createElement("div");
@@ -55,16 +78,32 @@
       return item;
     }
 
-    function render(scrollTop, windowHeight, itemHeight) {
-    innerContainer.innerHTML = "";
-    let startIndex = Math.floor(scrollTop / itemHeight);
-    let endIndex = Math.min(count - 1, Math.floor((scrollTop + windowHeight + windowHeight) / itemHeight));
+    function getStartingIndex(scrollTop, windowHeight, itemHeight) {
+      let offset = scrollTop - windowHeight;
 
-    console.log({ scrollTop, startIndex, endIndex });
-    for (let i = startIndex; i <= endIndex; i++) {
-        let child = renderItem(i);
-        innerContainer.appendChild(child)
+      if (offset < 0) {
+        offset = 0;
+      }
+
+      return Math.floor(offset / itemHeight);
     }
+
+    function getEndingIndex(scrollTop, windowHeight, itemHeight) {
+      let offset = scrollTop + windowHeight * 2;
+
+      return Math.min(count - 1, Math.floor(offset / itemHeight));
+    }
+
+    function render(scrollTop, windowHeight, itemHeight) {
+      innerContainer.innerHTML = "";
+      let startIndex = getStartingIndex(scrollTop, windowHeight, itemHeight);
+      let endIndex = getEndingIndex(scrollTop, windowHeight, itemHeight);
+
+      console.log({ scrollTop, startIndex, endIndex });
+      for (let i = startIndex; i <= endIndex; i++) {
+          let child = renderItem(i);
+          innerContainer.appendChild(child);
+      }
     }
 
     render(0, windowHeight, itemHeight);
