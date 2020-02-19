@@ -52,6 +52,9 @@
     }
 
     let count = 10000;
+    let columnCount = 3;
+    let windowWidth = window.innerWidth;
+    let itemWidth = 300;
     let itemHeight = 150;
     let container = document.querySelector(".container");
     let innerContainer = document.querySelector(".inner-container");
@@ -69,9 +72,9 @@
 
     container.addEventListener('scroll', throttle(handleScroll, 100), { passive: true });
 
-    function renderItem(index) {
+    function renderItem(index, rowIndex, columnIndex) {
       let item = document.createElement("div");
-      item.style = `height: ${itemHeight}px; position:absolute; width: 100%; top: ${index * itemHeight}px;`;
+      item.style = `height: ${itemHeight}px; width: ${itemWidth}px; position:absolute; top: ${rowIndex * itemHeight}px; left: ${columnIndex * itemWidth}px`;
       item.classList.add("element");
       item.innerHTML = `Item ${index}`;
 
@@ -85,13 +88,13 @@
         offset = 0;
       }
 
-      return Math.floor(offset / itemHeight);
+      return Math.floor(offset / itemHeight * columnCount);
     }
 
     function getEndingIndex(scrollTop, windowHeight, itemHeight) {
-      let offset = scrollTop + windowHeight * 2;
+      let offset = scrollTop + windowHeight;
 
-      return Math.min(count - 1, Math.floor(offset / itemHeight));
+      return Math.min(count - 1, Math.floor(offset * columnCount / itemHeight));
     }
 
     function render(scrollTop, windowHeight, itemHeight) {
@@ -101,7 +104,9 @@
 
       console.log({ scrollTop, startIndex, endIndex });
       for (let i = startIndex; i <= endIndex; i++) {
-          let child = renderItem(i);
+        let columnIndex = (i + 1) % columnCount === 0 ? 2 : (i + 1) % columnCount - 1;
+        let rowIndex = Math.floor(i / columnCount);
+        let child = renderItem(i, rowIndex, columnIndex);
           innerContainer.appendChild(child);
       }
     }
