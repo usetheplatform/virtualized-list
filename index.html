@@ -1,40 +1,42 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <style>
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
 
-      .container {
-        height: 100%;
-        overflow-y: auto;
-      }
+<head>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
 
-      .inner-container {
-        position: relative;
-      }
+    .container {
+      height: 100%;
+      overflow-y: auto;
+    }
 
-      .element {
-          border: 1px dashed #ccc;
-      }
-    </style>
-  </head>
+    .inner-container {
+      position: relative;
+    }
 
-  <body>
-    <div class="container">
-      <div class="inner-container"></div>
-    </div>
+    .element {
+      border: 1px dashed #ccc;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="inner-container"></div>
+  </div>
 
 
   <script>
     function throttle(func, delay) {
       let previousCall;
       let previousFunc;
-      return function(...args) {
+      return function (...args) {
         let context = this;
         if (!previousCall) {
           func.apply(context, args);
@@ -70,7 +72,9 @@
       render(scrollTop, windowHeight, itemHeight);
     }
 
-    container.addEventListener('scroll', throttle(handleScroll, 100), { passive: true });
+    // container.addEventListener('scroll', throttle(handleScroll, 100), { passive: true });
+    container.addEventListener('scroll', handleScroll, { passive: true });
+
 
     function renderItem(index, rowIndex, columnIndex) {
       let item = document.createElement("div");
@@ -107,12 +111,13 @@
         let columnIndex = (i + 1) % columnCount === 0 ? 2 : (i + 1) % columnCount - 1;
         let rowIndex = Math.floor(i / columnCount);
         let child = renderItem(i, rowIndex, columnIndex);
-          innerContainer.appendChild(child);
+        innerContainer.appendChild(child);
       }
     }
 
     render(0, windowHeight, itemHeight);
 
   </script>
-  </body>
+</body>
+
 </html>
